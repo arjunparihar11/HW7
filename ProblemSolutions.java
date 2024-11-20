@@ -47,7 +47,7 @@ public class ProblemSolutions {
             //Inner loop to find the minimum/maximum element in the unsorted part
             for (int j = i + 1; j < n; j++) {
                 //Update targetIndex based on the sorting order (ascending/descending)
-                if (ascending ? values[j] < values[targetIndex] : values[j] > values[targetIndex]) {
+                if ((ascending && values[j] < values[targetIndex]) || (!ascending && values[j] > values[targetIndex])) {
                     targetIndex = j;
                 }
             }
@@ -115,28 +115,32 @@ public class ProblemSolutions {
         // TO CODE WITH A SPACE COMPLEXITY OF O(N LOG N), WHICH IS FINE FOR PURPOSES
         // OF THIS PROGRAMMING EXERCISES.
 
-        //Temporary arrays for divisible and non divisible elements
-        int[] divisible = new int[right - left + 1];
-        int[] nonDivisible = new int[right - left + 1];
-        int divIdx = 0, nonDivIdx = 0;
-        //Collect divisible and non divisible elements
-        for (int i = left; i <= right; i++) {
-            if (arr[i] % k == 0) {
-                divisible[divIdx++] = arr[i];
-            } else {
-                nonDivisible[nonDivIdx++] = arr[i];
-            }
+        int[] temp = new int[right - left + 1];
+        int i = left, j = mid + 1, index = 0;
+        //Collect elements divisible by k
+        while (i <= mid) {
+            if (arr[i] % k == 0) temp[index++] = arr[i];
+            i++;
         }
-        //Sort both sections individually
-        Arrays.sort(divisible, 0, divIdx);
-        Arrays.sort(nonDivisible, 0, nonDivIdx);
-        //Merge back into the original array: first divisible, then non-divisible
-        int idx = 0;
-        for (int i = 0; i < divIdx; i++) {
-            arr[left + idx++] = divisible[i];
+        while (j <= right) {
+            if (arr[j] % k == 0) temp[index++] = arr[j];
+            j++;
         }
-        for (int i = 0; i < nonDivIdx; i++) {
-            arr[left + idx++] = nonDivisible[i];
+        //Reset i and j pointers
+        i = left;
+        j = mid + 1;
+        //Collect non-divisible elements
+        while (i <= mid) {
+            if (arr[i] % k != 0) temp[index++] = arr[i];
+            i++;
+        }
+        while (j <= right) {
+            if (arr[j] % k != 0) temp[index++] = arr[j];
+            j++;
+        }
+        //Copy the sorted result back into the original array
+        for (int t = 0; t < temp.length; t++) {
+            arr[left + t] = temp[t];
         }
     }
 
@@ -189,13 +193,19 @@ public class ProblemSolutions {
     public static boolean asteroidsDestroyed(int mass, int[] asteroids) {
         // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT()
 
-        Arrays.sort(asteroids);
-        long currentMass = mass;
+        //Sort asteroids by mass (smallest first)
+        Arrays.sort(asteroids); 
         for (int asteroid : asteroids) {
-            if (currentMass < asteroid) return false;
-            currentMass += asteroid;
+            if (mass >= asteroid) {
+                //Absorb the asteroid
+                mass += asteroid; 
+            } else {
+                //Planet is destroyed
+                return false; 
+            }
         }
-        return true;
+        //All asteroids destroyed
+        return true; 
     }
 
 
