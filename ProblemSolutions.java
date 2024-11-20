@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Arjun Parihar - COMP 272-002
  *
  *   This java file contains the problem solutions for the methods selectionSort,
  *   mergeSortDivisibleByKFirst, asteroidsDestroyed, and numRescueCanoes methods.
@@ -42,6 +42,19 @@ public class ProblemSolutions {
             // "SELECTION SORT" ALGORITHM.
             // DO NOT FORGET TO ADD YOUR NAME / SECTION ABOVE
 
+            //Index of the minimum/maximum element
+            int targetIndex = i; 
+            //Inner loop to find the minimum/maximum element in the unsorted part
+            for (int j = i + 1; j < n; j++) {
+                //Update targetIndex based on the sorting order (ascending/descending)
+                if (ascending ? values[j] < values[targetIndex] : values[j] > values[targetIndex]) {
+                    targetIndex = j;
+                }
+            }
+            //Swap the found element with the first element in the unsorted part
+            int temp = values[targetIndex];
+            values[targetIndex] = values[i];
+            values[i] = temp;
         }
 
     } // End class selectionSort
@@ -102,8 +115,29 @@ public class ProblemSolutions {
         // TO CODE WITH A SPACE COMPLEXITY OF O(N LOG N), WHICH IS FINE FOR PURPOSES
         // OF THIS PROGRAMMING EXERCISES.
 
-        return;
-
+        //Temporary arrays for divisible and non divisible elements
+        int[] divisible = new int[right - left + 1];
+        int[] nonDivisible = new int[right - left + 1];
+        int divIdx = 0, nonDivIdx = 0;
+        //Collect divisible and non divisible elements
+        for (int i = left; i <= right; i++) {
+            if (arr[i] % k == 0) {
+                divisible[divIdx++] = arr[i];
+            } else {
+                nonDivisible[nonDivIdx++] = arr[i];
+            }
+        }
+        //Sort both sections individually
+        Arrays.sort(divisible, 0, divIdx);
+        Arrays.sort(nonDivisible, 0, nonDivIdx);
+        //Merge back into the original array: first divisible, then non-divisible
+        int idx = 0;
+        for (int i = 0; i < divIdx; i++) {
+            arr[left + idx++] = divisible[i];
+        }
+        for (int i = 0; i < nonDivIdx; i++) {
+            arr[left + idx++] = nonDivisible[i];
+        }
     }
 
 
@@ -153,11 +187,15 @@ public class ProblemSolutions {
      */
 
     public static boolean asteroidsDestroyed(int mass, int[] asteroids) {
-
         // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT()
 
-        return false;
-
+        Arrays.sort(asteroids);
+        long currentMass = mass;
+        for (int asteroid : asteroids) {
+            if (currentMass < asteroid) return false;
+            currentMass += asteroid;
+        }
+        return true;
     }
 
 
@@ -194,8 +232,17 @@ public class ProblemSolutions {
 
         // YOUR CODE GOES HERE, CONSIDER USING ARRAYS.SORT
 
-        return -1;
-
+        Arrays.sort(people);
+        int left = 0, right = people.length - 1;
+        int sleds = 0;
+        while (left <= right) {
+            if (people[left] + people[right] <= limit) {
+                left++;
+            }
+            right--;
+            sleds++;
+        }
+        return sleds;
     }
 
 } // End Class ProblemSolutions
